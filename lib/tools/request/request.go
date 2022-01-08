@@ -10,8 +10,8 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/syedomair/ex-pay-gateway/lib/models"
-	"github.com/syedomair/ex-pay-gateway/lib/tools/logger"
+	"github.com/syedomair/ex-paygate/lib/models"
+	"github.com/syedomair/ex-paygate/lib/tools/logger"
 )
 
 const (
