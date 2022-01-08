@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/syedomair/ex-paygate/lib/tools/logger"
+	"github.com/syedomair/ex-paygate-lib/lib/tools/logger"
 )
 
 const (

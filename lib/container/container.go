@@ -5,8 +5,8 @@ import (
 	"os"
 
 	"github.com/jinzhu/gorm"
-	db "github.com/syedomair/ex-paygate/lib/db"
-	"github.com/syedomair/ex-paygate/lib/tools/logger"
+	db "github.com/syedomair/ex-paygate-lib/lib/db"
+	"github.com/syedomair/ex-paygate-lib/lib/tools/logger"
 )
 
 // Const
