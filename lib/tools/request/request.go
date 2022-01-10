@@ -49,7 +49,7 @@ func ValidateInputParameters(r *http.Request, requestID string, logger logger.Lo
 	if err := decodedJSON.Decode(&jsonMap); err != nil {
 		return nil, errorCodePrefix + "02", errors.New("Invalid JSON in request BODY:" + string(body) + "  ERROR:" + err.Error())
 	}
-	logger.Debug(requestID, "M:%v request:%v", methodName, r)
+	//logger.Debug(requestID, "M:%v request:%v", methodName, r)
 	logger.Debug(requestID, "M:%v jsonMap:%v", methodName, jsonMap)
 
 	for k := range jsonMap {
