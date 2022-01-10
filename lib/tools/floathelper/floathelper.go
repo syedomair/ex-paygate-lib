@@ -11,7 +11,7 @@ func (f Floater) IsEqual(a, b float64) bool {
 	return math.Abs(a-b) < f.Accuracy
 }
 
-// if AGreaterThanB  return 1
+// if AGreaterThanB  returns 1
 func (f Floater) AGreaterThanB(a, b float64) int8 {
 	if math.Abs(a-b) < f.Accuracy {
 		return 0
