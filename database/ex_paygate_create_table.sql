@@ -10,7 +10,7 @@ CREATE TABLE "ledger" (
   "id" bigserial PRIMARY KEY,
   "merchant_id" bigint NOT NULL,
   "approve_id" bigint NOT NULL,
-  "amount" bigint NOT NULL,
+  "amount" float8 NOT NULL,
   "action_type" varchar NOT NULL,
   "created_at" timestamptz NOT NULL DEFAULT (now())
 );
