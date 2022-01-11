@@ -31,7 +31,7 @@ func main() {
 	approveURL := `http://` + *serverName + `:8321/v1/authorize`
 	voidURL := `http://` + *serverName + `:8322/v1/void`
 	captureURL := `http://` + *serverName + `:8323/v1/capture`
-	//refundURL := `http://` + serverName + `:8323/v1/refund`
+	refundURL := `http://` + *serverName + `:8324/v1/refund`
 
 	// Invalid Merchant KEY
 	requestBody := `{"` + MerchantKey + `":"` + InValidMerchanKey + `", "` + CcNumber +
@@ -49,7 +49,7 @@ func main() {
 	requestBody = `{"` + MerchantKey + `":"` + ValidMerchanKey + `", "` + CcNumber +
 		`":"` + ValidCCNumber + `", "` + CcCVV + `":"1234",  "` + CcMonth + `":"12", "` + CcYear + `":"2025","` +
 		Currency + `":"USD", "` + Amount + `":"100"}`
-	jsonResult, jsonData, httpStatus, err := client.CallAPI("POST", approveURL, requestBody, "", "")
+	_, jsonData, httpStatus, err := client.CallAPI("POST", approveURL, requestBody, "", "")
 	if err != nil {
 		fmt.Printf("Error in API call err:%v", err)
 	}
@@ -62,7 +62,7 @@ func main() {
 
 	// Void approve
 	requestBody = `{"` + ApproveKey + `":"` + approveKey + `" }`
-	jsonResult, jsonData, httpStatus, err = client.CallAPI("POST", voidURL, requestBody, "", "")
+	_, jsonData, httpStatus, err = client.CallAPI("POST", voidURL, requestBody, "", "")
 	if err != nil {
 		fmt.Printf("Error in API call err:%v", err)
 	}
@@ -73,7 +73,7 @@ func main() {
 
 	// Capture on Void approve
 	requestBody = `{"` + ApproveKey + `":"` + approveKey + `", "` + Amount + `":"10" }`
-	jsonResult, jsonData, httpStatus, err = client.CallAPI("POST", captureURL, requestBody, "", "")
+	_, jsonData, httpStatus, err = client.CallAPI("POST", captureURL, requestBody, "", "")
 	if err != nil {
 		fmt.Printf("Error in API call err:%v", err)
 	}
@@ -87,7 +87,7 @@ func main() {
 	requestBody = `{"` + MerchantKey + `":"` + ValidMerchanKey + `", "` + CcNumber +
 		`":"` + ValidCCNumber + `", "` + CcCVV + `":"1234",  "` + CcMonth + `":"12", "` + CcYear + `":"2025","` +
 		Currency + `":"USD", "` + Amount + `":"100"}`
-	jsonResult, jsonData, httpStatus, err = client.CallAPI("POST", approveURL, requestBody, "", "")
+	_, jsonData, httpStatus, err = client.CallAPI("POST", approveURL, requestBody, "", "")
 	if err != nil {
 		fmt.Printf("Error in API call err:%v", err)
 	}
@@ -98,9 +98,27 @@ func main() {
 
 	approveKey = client.ExtractVariable(jsonData, "approve_key")
 
-	// Capture on Void approve
+	for i := 0; i < 10; i++ {
+		go func() {
+			requestBody = `{"` + ApproveKey + `":"` + approveKey + `", "` + Amount + `":"10" }`
+			_, jsonData, httpStatus, err = client.CallAPI("POST", captureURL, requestBody, "", "")
+			if err != nil {
+				fmt.Printf("Error in API call err:%v", err)
+			}
+
+			if httpStatus != 200 {
+				fmt.Println("test broken: %v" + requestBody)
+				return
+			}
+		}()
+	}
+
+	balance := client.ExtractVariable(jsonData, "approved_amount_balance")
+	fmt.Println(balance)
+
+	// Capture on approve
 	requestBody = `{"` + ApproveKey + `":"` + approveKey + `", "` + Amount + `":"10" }`
-	jsonResult, jsonData, httpStatus, err = client.CallAPI("POST", captureURL, requestBody, "", "")
+	_, jsonData, httpStatus, err = client.CallAPI("POST", captureURL, requestBody, "", "")
 	if err != nil {
 		fmt.Printf("Error in API call err:%v", err)
 	}
@@ -109,10 +127,21 @@ func main() {
 		fmt.Println("test broken: %v" + requestBody)
 		return
 	}
+	balance = client.ExtractVariable(jsonData, "approved_amount_balance")
+	fmt.Println(balance)
 
-	fmt.Println(approveKey)
-	fmt.Println(httpStatus)
-	fmt.Println(jsonResult)
-	fmt.Println(jsonData)
+	// Refund on approve
+	requestBody = `{"` + ApproveKey + `":"` + approveKey + `", "` + Amount + `":"10" }`
+	_, jsonData, httpStatus, err = client.CallAPI("POST", refundURL, requestBody, "", "")
+	if err != nil {
+		fmt.Printf("Error in API call err:%v", err)
+	}
+
+	if httpStatus != 200 {
+		fmt.Println("test broken: %v" + requestBody)
+		return
+	}
+	balance = client.ExtractVariable(jsonData, "approved_amount_balance")
+	fmt.Println(balance)
 
 }
